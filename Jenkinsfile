@@ -2,24 +2,20 @@ pipeline {
     agent any
 
     triggers {
-        pollSCM('H/5 * * * *')  // Changez ici selon vos besoins
-    }
-
-    tools {
-        maven 'Maven'
-        jdk 'JDK'
+        pollSCM('H/5 * * * *')
     }
 
     environment {
-        SONAR_IP = '172.25.0.5'  // Mettez votre IP SonarQube ici
+        SONAR_IP = '172.25.0.5'  // Changez avec votre IP
+        MAVEN_HOME = '/usr/share/maven'
+        PATH = "${MAVEN_HOME}/bin:${env.PATH}"
     }
 
     stages {
         stage('Checkout') {
             steps {
                 echo '📥 Cloning repository...'
-                git branch: 'main',
-                    url: 'https://github.com/mousaabougrich/pfa-jenkins-backend.git'
+                checkout scm
             }
         }
 
@@ -55,8 +51,7 @@ pipeline {
                     -Dsonar.sources=src/main/java \
                     -Dsonar.tests=src/test/java \
                     -Dsonar.java.binaries=target/classes \
-                    -Dsonar.java.test.binaries=target/test-classes \
-                    -Dsonar.coverage.jacoco.xmlReportPaths=target/site/jacoco/jacoco.xml
+                    -Dsonar.java.test.binaries=target/test-classes
                 """
             }
         }
@@ -65,14 +60,10 @@ pipeline {
     post {
         success {
             echo '✅ Build completed successfully!'
-            echo "📊 View report: http://${SONAR_IP}:9000/dashboard?id=biochain"
+            echo "📊 View SonarQube: http://${SONAR_IP}:9000/dashboard?id=biochain"
         }
         failure {
             echo '❌ Build failed!'
-        }
-        always {
-            echo '🧹 Cleaning workspace...'
-            cleanWs()
         }
     }
 }
