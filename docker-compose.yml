@@ -130,9 +130,6 @@ services:
       start_period: 40s
     restart: unless-stopped
 
-  # ============================================
-  # SonarQube Services (LATEST VERSION)
-  # ============================================
   sonarqube-db:
     image: postgres:15-alpine
     container_name: biochain_sonarqube_db
@@ -207,9 +204,6 @@ services:
           -Dsonar.token=${SONAR_TOKEN}
       "
 
-  # ============================================
-  # Jenkins Service
-  # ============================================
   jenkins:
     build:
       context: .
@@ -231,6 +225,9 @@ services:
         condition: service_healthy
     environment:
       DOCKER_HOST: unix:///var/run/docker.sock
+    dns:
+      - 8.8.8.8
+      - 8.8.4.4
 
 volumes:
   postgres_data:
