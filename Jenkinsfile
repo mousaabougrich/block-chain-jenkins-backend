@@ -6,8 +6,8 @@ pipeline {
     }
 
     environment {
-        SONAR_IP = '172.25.0.5'  // Votre IP
-        MAVEN_OPTS = '-Xmx1024m'
+        SONAR_IP = '172.25.0.5'
+        MAVEN_OPTS = '-Xmx512m -XX:MaxMetaspaceSize=256m'
     }
 
     stages {
@@ -18,41 +18,22 @@ pipeline {
             }
         }
 
-        stage('Build') {
+        stage('Build & Test & Analyze') {
             steps {
-                echo '🔨 Building project...'
-                sh 'mvn clean compile -DskipTests'
-            }
-        }
-
-        stage('Unit Tests') {
-            steps {
-                echo '🧪 Running tests with H2 database...'
-                sh 'mvn test -Dspring.profiles.active=test'
-            }
-        }
-
-        stage('Code Coverage') {
-            steps {
-                echo '📊 Generating coverage report...'
-                sh 'mvn jacoco:report'
-            }
-        }
-
-        stage('SonarQube Analysis') {
-            steps {
-                echo '🔍 Running SonarQube analysis...'
-                sh """
-                    mvn sonar:sonar \
-                    -Dsonar.projectKey=biochain \
-                    -Dsonar.projectName=biochain \
-                    -Dsonar.host.url=http://${SONAR_IP}:9000 \
-                    -Dsonar.sources=src/main/java \
-                    -Dsonar.tests=src/test/java \
-                    -Dsonar.java.binaries=target/classes \
-                    -Dsonar.java.test.binaries=target/test-classes \
-                    -Dsonar.coverage.jacoco.xmlReportPaths=target/site/jacoco/jacoco.xml
-                """
+                echo '🚀 Running Maven build with tests and SonarQube...'
+                script {
+                    try {
+                        sh '''
+                            mvn clean verify sonar:sonar \
+                            -Dspring.profiles.active=test \
+                            -Dsonar.projectKey=biochain \
+                            -Dsonar.host.url=http://${SONAR_IP}:9000
+                        '''
+                    } catch (Exception e) {
+                        echo "Build failed: ${e.getMessage()}"
+                        currentBuild.result = 'FAILURE'
+                    }
+                }
             }
         }
     }
@@ -60,14 +41,10 @@ pipeline {
     post {
         success {
             echo '✅ Build completed successfully!'
-            echo "📊 SonarQube: http://${SONAR_IP}:9000/dashboard?id=biochain"
+            echo "📊 View SonarQube: http://${SONAR_IP}:9000/dashboard?id=biochain"
         }
         failure {
-            echo '❌ Build failed!'
-        }
-        always {
-            junit '**/target/surefire-reports/*.xml'
-            jacoco(execPattern: '**/target/jacoco.exec')
+            echo '❌ Build failed - Check console output'
         }
     }
 }
