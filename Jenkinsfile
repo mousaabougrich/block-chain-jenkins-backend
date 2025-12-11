@@ -6,7 +6,7 @@ pipeline {
     }
 
     environment {
-        SONAR_IP = '172.25.0.5'
+        SONAR_IP = '172.25.0.4'  // ✅ IP corrigée!
         MAVEN_OPTS = '-Xmx512m -XX:MaxMetaspaceSize=256m'
     }
 
