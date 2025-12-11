@@ -6,9 +6,8 @@ pipeline {
     }
 
     environment {
-        SONAR_IP = '172.25.0.5'  // Changez avec votre IP
-        MAVEN_HOME = '/usr/share/maven'
-        PATH = "${MAVEN_HOME}/bin:${env.PATH}"
+        SONAR_IP = '172.25.0.5'  // Votre IP
+        MAVEN_OPTS = '-Xmx1024m'
     }
 
     stages {
@@ -22,14 +21,14 @@ pipeline {
         stage('Build') {
             steps {
                 echo '🔨 Building project...'
-                sh 'mvn clean compile'
+                sh 'mvn clean compile -DskipTests'
             }
         }
 
         stage('Unit Tests') {
             steps {
-                echo '🧪 Running tests...'
-                sh 'mvn test'
+                echo '🧪 Running tests with H2 database...'
+                sh 'mvn test -Dspring.profiles.active=test'
             }
         }
 
@@ -51,7 +50,8 @@ pipeline {
                     -Dsonar.sources=src/main/java \
                     -Dsonar.tests=src/test/java \
                     -Dsonar.java.binaries=target/classes \
-                    -Dsonar.java.test.binaries=target/test-classes
+                    -Dsonar.java.test.binaries=target/test-classes \
+                    -Dsonar.coverage.jacoco.xmlReportPaths=target/site/jacoco/jacoco.xml
                 """
             }
         }
@@ -60,10 +60,14 @@ pipeline {
     post {
         success {
             echo '✅ Build completed successfully!'
-            echo "📊 View SonarQube: http://${SONAR_IP}:9000/dashboard?id=biochain"
+            echo "📊 SonarQube: http://${SONAR_IP}:9000/dashboard?id=biochain"
         }
         failure {
             echo '❌ Build failed!'
+        }
+        always {
+            junit '**/target/surefire-reports/*.xml'
+            jacoco(execPattern: '**/target/jacoco.exec')
         }
     }
 }
