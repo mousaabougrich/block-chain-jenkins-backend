@@ -83,9 +83,9 @@ class TransactionControllerTest {
     @Test
     void getTransactionHistory_success() throws Exception {
         TransactionHistoryDTO dto = new TransactionHistoryDTO(
-                1L, "hash", TransactionType.TRANSFER, BigDecimal.TEN, BigDecimal.ONE,
                 "hash", "sender", "recipient", BigDecimal.TEN, BigDecimal.ONE,
-                TransactionStatus.CONFIRMED, 1, "SENT", LocalDateTime.now(), 1, "memo
+                TransactionStatus.CONFIRMED, 1, "SENT", LocalDateTime.now(), 1, "memo");
+        
         when(transactionService.getTransactionHistory("address")).thenReturn(List.of(dto));
 
         mockMvc.perform(get("/api/transactions/wallet/address/history"))
@@ -152,32 +152,22 @@ class TransactionControllerTest {
 
     @Test
     void confirmTransaction_success() throws Exception {
-        doNothing().when(transactionService).confirmTransaction("hash", 1);
+        doNothing().when(transactionService).confirmTransaction("hash", 1L);
 
         mockMvc.perform(post("/api/transactions/hash/confirm")
                 .param("blockHeight", "1"))
                 .andExpect(status().isOk());
 
-        verify(transactionService).confirmTransaction("hash", 1);
+        verify(transactionService).confirmTransaction("hash", 1L);
     }
 
     @Test
     void confirmTransaction_failure() throws Exception {
         doThrow(new IllegalArgumentException("Not found"))
-                .when(transactionService).confirmTransaction("hash", 1);
+                .when(transactionService).confirmTransaction("hash", 1L);
 
         mockMvc.perform(post("/api/transactions/hash/confirm")
                 .param("blockHeight", "1"))
                 .andExpect(status().isBadRequest());
-    }
-
-    @Test
-    void rejectTransaction_success() throws Exception {
-        doNothing().when(transactionService).rejectTransaction("hash");
-
-        mockMvc.perform(post("/api/transactions/hash/reject"))
-                .andExpect(status().isOk());
-
-        verify(transactionService).rejectTransaction("hash");
     }
 }

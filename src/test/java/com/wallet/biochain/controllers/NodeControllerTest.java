@@ -185,7 +185,7 @@ class NodeControllerTest {
 
     @Test
     void getPeerList_success() throws Exception {
-        PeerListDTO dto = new PeerListDTO(List.of(), 0);
+        PeerListDTO dto = new PeerListDTO(List.of(), 0, 0);
         
         when(nodeService.getPeerList("node1")).thenReturn(dto);
 

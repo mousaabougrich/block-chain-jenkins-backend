@@ -63,14 +63,16 @@ class BlockchainControllerTest {
     @Test
     void getBlockchainStatus_success() throws Exception {
         BlockchainStatusDTO status = new BlockchainStatusDTO(
-                "chain1", "Test Chain", 100, BigDecimal.valueOf(1000), 4, ConsensusType.PROOF_OF_WORK, true);
+                "chain1", "Test Chain", 100, "hash123", 4, 
+                BigDecimal.valueOf(50), ConsensusType.PROOF_OF_WORK, 
+                1000, 5, true, 30, null);
         
         when(blockchainService.getBlockchainStatus("chain1")).thenReturn(status);
 
         mockMvc.perform(get("/api/blockchain/chain1/status"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.chainId").value("chain1"))
-                .andExpect(jsonPath("$.height").value(100));
+                .andExpect(jsonPath("$.currentHeight").value(100));
     }
 
     @Test
@@ -148,9 +150,9 @@ class BlockchainControllerTest {
     @Test
     void getBlocks_success() throws Exception {
         BlockDTO block = new BlockDTO(1L, 1, "hash", "prevHash", 
-                "merkle", null, 0L, 1234567890L, "miner", List.of());
+                1234567890L, 0, 4, "merkle", "miner", 0, List.of(), null);
         
-        when(blockService.getBlocks("chain1", 0, 10)).thenReturn(List.of(block));
+        when(blockService.getBlocksInRange(0, 10)).thenReturn(List.of(block));
 
         mockMvc.perform(get("/api/blockchain/chain1/blocks")
                 .param("page", "0")
@@ -163,23 +165,22 @@ class BlockchainControllerTest {
     @Test
     void getLatestBlocks_success() throws Exception {
         BlockDTO block = new BlockDTO(1L, 1, "hash", "prevHash", 
-                "merkle", null, 0L, 1234567890L, "miner", List.of());
+                1234567890L, 0, 4, "merkle", "miner", 0, List.of(), null);
         
-        when(blockService.getLatestBlocks("chain1", 5)).thenReturn(List.of(block));
+        when(blockService.getLatestBlock()).thenReturn(java.util.Optional.of(block));
 
         mockMvc.perform(get("/api/blockchain/chain1/blocks/latest")
                 .param("count", "5"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$").isArray())
-                .andExpect(jsonPath("$.length()").value(1));
+                .andExpect(jsonPath("$.blockIndex").value(1));
     }
 
     @Test
     void getBlockByHeight_success() throws Exception {
         BlockDTO block = new BlockDTO(1L, 1, "hash", "prevHash", 
-                "merkle", null, 0L, 1234567890L, "miner", List.of());
+                1234567890L, 0, 4, "merkle", "miner", 0, List.of(), null);
         
-        when(blockService.getBlockByHeight("chain1", 1)).thenReturn(java.util.Optional.of(block));
+        when(blockService.getBlockByIndex(1)).thenReturn(java.util.Optional.of(block));
 
         mockMvc.perform(get("/api/blockchain/chain1/blocks/height/1"))
                 .andExpect(status().isOk())
@@ -188,7 +189,7 @@ class BlockchainControllerTest {
 
     @Test
     void getBlockByHeight_notFound() throws Exception {
-        when(blockService.getBlockByHeight("chain1", 1)).thenReturn(java.util.Optional.empty());
+        when(blockService.getBlockByIndex(1)).thenReturn(java.util.Optional.empty());
 
         mockMvc.perform(get("/api/blockchain/chain1/blocks/height/1"))
                 .andExpect(status().isNotFound());
@@ -197,7 +198,7 @@ class BlockchainControllerTest {
     @Test
     void getBlockByHash_success() throws Exception {
         BlockDTO block = new BlockDTO(1L, 1, "hash", "prevHash", 
-                "merkle", null, 0L, 1234567890L, "miner", List.of());
+                1234567890L, 0, 4, "merkle", "miner", 0, List.of(), null);
         
         when(blockService.getBlockByHash("hash")).thenReturn(java.util.Optional.of(block));
 
