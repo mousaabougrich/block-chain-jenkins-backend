@@ -22,10 +22,15 @@ public class AuthController {
     @PostMapping("/register")
     @Operation(summary = "Register new user", description = "Registers a new user in the system")
     public ResponseEntity<UserDTO> register(@RequestBody UserDTO userDTO) {
-        log.info("REST request to register new user: {}", userDTO.getUsername());
+        log.info("REST request to register new user: {}", userDTO.username());
 
         try {
-            UserDTO createdUser = userService.createUser(userDTO);
+            UserDTO createdUser = userService.createUser(
+                userDTO.username(),
+                userDTO.email(),
+                userDTO.fullName(),
+                userDTO.phoneNumber()
+            );
             return ResponseEntity.status(HttpStatus.CREATED).body(createdUser);
         } catch (IllegalArgumentException e) {
             log.error("Failed to register user: {}", e.getMessage());
