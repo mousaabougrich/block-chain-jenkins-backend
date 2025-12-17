@@ -157,7 +157,7 @@ class TransactionControllerTest {
         doNothing().when(transactionService).confirmTransaction("hash", 1L);
 
         mockMvc.perform(post("/api/transactions/hash/confirm")
-                .param("blockHeight", "1"))
+                .param("blockId", "1"))
                 .andExpect(status().isOk());
 
         verify(transactionService).confirmTransaction("hash", 1L);
@@ -169,7 +169,7 @@ class TransactionControllerTest {
                 .when(transactionService).confirmTransaction("hash", 1L);
 
         mockMvc.perform(post("/api/transactions/hash/confirm")
-                .param("blockHeight", "1"))
+                .param("blockId", "1"))
                 .andExpect(status().isBadRequest());
     }
 }
