@@ -16,15 +16,12 @@ public class CorsConfig {
     public CorsFilter corsFilter() {
         CorsConfiguration config = new CorsConfiguration();
         
-        // Allow requests from Angular frontend
-        config.setAllowedOrigins(Arrays.asList(
-            "http://localhost:4200",
-            "http://127.0.0.1:4200"
-        ));
+        // Allow all origins in development (more permissive for debugging)
+        config.setAllowedOriginPatterns(List.of("*"));
         
         // Allow all HTTP methods
         config.setAllowedMethods(Arrays.asList(
-            "GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"
+            "GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS", "HEAD"
         ));
         
         // Allow all headers
