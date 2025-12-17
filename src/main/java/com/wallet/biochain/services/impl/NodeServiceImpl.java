@@ -15,6 +15,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.security.SecureRandom;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -27,6 +28,7 @@ public class NodeServiceImpl implements NodeService {
     private final NodeRepository nodeRepository;
     private final NodeMapper nodeMapper;
     private final NetworkConfig networkConfig;
+    private final SecureRandom secureRandom = new SecureRandom();
 
     @Override
     @Transactional
@@ -180,7 +182,7 @@ public class NodeServiceImpl implements NodeService {
                 .orElseThrow(() -> new IllegalArgumentException("Node not found: " + nodeId));
 
         // Simulate latency measurement (in production, actual ping)
-        long latency = 50L + (long) (Math.random() * 200); // 50-250ms
+        long latency = 50L + secureRandom.nextInt(201); // 50-250ms
         node.setLatencyMs(latency);
         nodeRepository.save(node);
 
