@@ -4,7 +4,6 @@ import com.wallet.biochain.dto.TransactionHistoryDTO;
 import com.wallet.biochain.dto.TransactionRequestDTO;
 import com.wallet.biochain.dto.TransactionResponseDTO;
 import com.wallet.biochain.enums.TransactionStatus;
-import com.wallet.biochain.enums.TransactionType;
 import com.wallet.biochain.services.TransactionService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,8 +35,7 @@ class TransactionControllerTest {
     void createTransaction_success() throws Exception {
         TransactionResponseDTO dto = new TransactionResponseDTO(
                 1L, "hash", "sender", "recipient", BigDecimal.TEN, BigDecimal.ONE,
-                TransactionType.TRANSFER, TransactionStatus.PENDING, LocalDateTime.now(),
-                null, 0, null, "sig");
+                TransactionStatus.PENDING, 0, 1234567890L, LocalDateTime.now(), "memo");
         
         when(transactionService.createTransaction(any())).thenReturn(dto);
 
@@ -45,7 +43,7 @@ class TransactionControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("{\"senderAddress\":\"sender\",\"recipientAddress\":\"recipient\",\"amount\":10.0,\"privateKey\":\"key\"}"))
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.hash").value("hash"));
+                .andExpect(jsonPath("$.transactionHash").value("hash"));
 
         verify(transactionService).createTransaction(any());
     }
@@ -65,14 +63,13 @@ class TransactionControllerTest {
     void getTransactionByHash_found() throws Exception {
         TransactionResponseDTO dto = new TransactionResponseDTO(
                 1L, "hash", "sender", "recipient", BigDecimal.TEN, BigDecimal.ONE,
-                TransactionType.TRANSFER, TransactionStatus.CONFIRMED, LocalDateTime.now(),
-                LocalDateTime.now(), 1, "blockHash", "sig");
+                TransactionStatus.CONFIRMED, 1, 1234567890L, LocalDateTime.now(), "memo");
         
         when(transactionService.getTransactionByHash("hash")).thenReturn(Optional.of(dto));
 
         mockMvc.perform(get("/api/transactions/hash"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.hash").value("hash"));
+                .andExpect(jsonPath("$.transactionHash").value("hash"));
     }
 
     @Test
@@ -87,8 +84,8 @@ class TransactionControllerTest {
     void getTransactionHistory_success() throws Exception {
         TransactionHistoryDTO dto = new TransactionHistoryDTO(
                 1L, "hash", TransactionType.TRANSFER, BigDecimal.TEN, BigDecimal.ONE,
-                "sender", "recipient", LocalDateTime.now(), TransactionStatus.CONFIRMED, "IN");
-        
+                "hash", "sender", "recipient", BigDecimal.TEN, BigDecimal.ONE,
+                TransactionStatus.CONFIRMED, 1, "SENT", LocalDateTime.now(), 1, "memo
         when(transactionService.getTransactionHistory("address")).thenReturn(List.of(dto));
 
         mockMvc.perform(get("/api/transactions/wallet/address/history"))
@@ -101,8 +98,7 @@ class TransactionControllerTest {
     void getSentTransactions_success() throws Exception {
         TransactionResponseDTO dto = new TransactionResponseDTO(
                 1L, "hash", "sender", "recipient", BigDecimal.TEN, BigDecimal.ONE,
-                TransactionType.TRANSFER, TransactionStatus.CONFIRMED, LocalDateTime.now(),
-                LocalDateTime.now(), 1, "blockHash", "sig");
+                TransactionStatus.CONFIRMED, 1, 1234567890L, LocalDateTime.now(), "memo");
         
         when(transactionService.getSentTransactions("address")).thenReturn(List.of(dto));
 
@@ -116,8 +112,7 @@ class TransactionControllerTest {
     void getReceivedTransactions_success() throws Exception {
         TransactionResponseDTO dto = new TransactionResponseDTO(
                 1L, "hash", "sender", "recipient", BigDecimal.TEN, BigDecimal.ONE,
-                TransactionType.TRANSFER, TransactionStatus.CONFIRMED, LocalDateTime.now(),
-                LocalDateTime.now(), 1, "blockHash", "sig");
+                TransactionStatus.CONFIRMED, 1, 1234567890L, LocalDateTime.now(), "memo");
         
         when(transactionService.getReceivedTransactions("address")).thenReturn(List.of(dto));
 
@@ -131,8 +126,7 @@ class TransactionControllerTest {
     void getPendingTransactions_success() throws Exception {
         TransactionResponseDTO dto = new TransactionResponseDTO(
                 1L, "hash", "sender", "recipient", BigDecimal.TEN, BigDecimal.ONE,
-                TransactionType.TRANSFER, TransactionStatus.PENDING, LocalDateTime.now(),
-                null, 0, null, "sig");
+                TransactionStatus.PENDING, 0, 1234567890L, LocalDateTime.now(), "memo");
         
         when(transactionService.getPendingTransactions()).thenReturn(List.of(dto));
 
@@ -146,8 +140,7 @@ class TransactionControllerTest {
     void getConfirmedTransactions_success() throws Exception {
         TransactionResponseDTO dto = new TransactionResponseDTO(
                 1L, "hash", "sender", "recipient", BigDecimal.TEN, BigDecimal.ONE,
-                TransactionType.TRANSFER, TransactionStatus.CONFIRMED, LocalDateTime.now(),
-                LocalDateTime.now(), 1, "blockHash", "sig");
+                TransactionStatus.CONFIRMED, 1, 1234567890L, LocalDateTime.now(), "memo");
         
         when(transactionService.getConfirmedTransactions()).thenReturn(List.of(dto));
 

@@ -32,17 +32,8 @@ class NodeControllerTest {
 
     @Test
     void registerNode_success() throws Exception {
-        NodeInfoDTO dto = new NodeInfoDTO();
-        dto.setId(1L);
-        dto.setNodeId("node1");
-        dto.setIpAddress("127.0.0.1");
-        dto.setPort(8080);
-        dto.setNodeType(NodeType.FULL_NODE);
-        dto.setStatus(NodeStatus.ACTIVE);
-        dto.setVersion("v1");
-        dto.setBlockHeight(0);
-        dto.setTrusted(false);
-        dto.setLatency(0);
+        NodeInfoDTO dto = new NodeInfoDTO(1L, "node1", "127.0.0.1", 8080, 
+                NodeStatus.ACTIVE, NodeType.FULL_NODE, null, 0, "v1", 0L, false, 0, 0);
         
         when(nodeService.registerNode(any())).thenReturn(dto);
 
@@ -67,17 +58,8 @@ class NodeControllerTest {
 
     @Test
     void getNodeById_found() throws Exception {
-        NodeInfoDTO dto = new NodeInfoDTO();
-        dto.setId(1L);
-        dto.setNodeId("node1");
-        dto.setIpAddress("127.0.0.1");
-        dto.setPort(8080);
-        dto.setNodeType(NodeType.FULL_NODE);
-        dto.setStatus(NodeStatus.ACTIVE);
-        dto.setVersion("v1");
-        dto.setBlockHeight(0);
-        dto.setTrusted(false);
-        dto.setLatency(0);
+        NodeInfoDTO dto = new NodeInfoDTO(1L, "node1", "127.0.0.1", 8080, 
+                NodeStatus.ACTIVE, NodeType.FULL_NODE, null, 0, "v1", 0L, false, 0, 0);
         
         when(nodeService.getNodeById(1L)).thenReturn(Optional.of(dto));
 
@@ -96,17 +78,8 @@ class NodeControllerTest {
 
     @Test
     void getNodeByNodeId_found() throws Exception {
-        NodeInfoDTO dto = new NodeInfoDTO();
-        dto.setId(1L);
-        dto.setNodeId("node1");
-        dto.setIpAddress("127.0.0.1");
-        dto.setPort(8080);
-        dto.setNodeType(NodeType.FULL_NODE);
-        dto.setStatus(NodeStatus.ACTIVE);
-        dto.setVersion("v1");
-        dto.setBlockHeight(0);
-        dto.setTrusted(false);
-        dto.setLatency(0);
+        NodeInfoDTO dto = new NodeInfoDTO(1L, "node1", "127.0.0.1", 8080, 
+                NodeStatus.ACTIVE, NodeType.FULL_NODE, null, 0, "v1", 0L, false, 0, 0);
         
         when(nodeService.getNodeByNodeId("node1")).thenReturn(Optional.of(dto));
 
@@ -117,23 +90,10 @@ class NodeControllerTest {
 
     @Test
     void getAllNodes_success() throws Exception {
-        NodeInfoDTO dto1 = new NodeInfoDTO();
-        dto1.setId(1L);
-        dto1.setNodeId("node1");
-        dto1.setIpAddress("127.0.0.1");
-        dto1.setPort(8080);
-        dto1.setNodeType(NodeType.FULL_NODE);
-        dto1.setStatus(NodeStatus.ACTIVE);
-        dto1.setVersion("v1");
-        
-        NodeInfoDTO dto2 = new NodeInfoDTO();
-        dto2.setId(2L);
-        dto2.setNodeId("node2");
-        dto2.setIpAddress("127.0.0.2");
-        dto2.setPort(8081);
-        dto2.setNodeType(NodeType.FULL_NODE);
-        dto2.setStatus(NodeStatus.ACTIVE);
-        dto2.setVersion("v1");
+        NodeInfoDTO dto1 = new NodeInfoDTO(1L, "node1", "127.0.0.1", 8080, 
+                NodeStatus.ACTIVE, NodeType.FULL_NODE, null, 0, "v1", 0L, false, 0, 0);
+        NodeInfoDTO dto2 = new NodeInfoDTO(2L, "node2", "127.0.0.2", 8081, 
+                NodeStatus.ACTIVE, NodeType.FULL_NODE, null, 0, "v1", 0L, false, 0, 0);
         
         when(nodeService.getAllNodes()).thenReturn(List.of(dto1, dto2));
 
@@ -145,14 +105,8 @@ class NodeControllerTest {
 
     @Test
     void getActiveNodes_success() throws Exception {
-        NodeInfoDTO dto = new NodeInfoDTO();
-        dto.setId(1L);
-        dto.setNodeId("node1");
-        dto.setIpAddress("127.0.0.1");
-        dto.setPort(8080);
-        dto.setNodeType(NodeType.FULL_NODE);
-        dto.setStatus(NodeStatus.ACTIVE);
-        dto.setVersion("v1");
+        NodeInfoDTO dto = new NodeInfoDTO(1L, "node1", "127.0.0.1", 8080, 
+                NodeStatus.ACTIVE, NodeType.FULL_NODE, null, 0, "v1", 0L, false, 0, 0);
         
         when(nodeService.getActiveNodes()).thenReturn(List.of(dto));
 
@@ -164,14 +118,8 @@ class NodeControllerTest {
 
     @Test
     void getNodesByStatus_success() throws Exception {
-        NodeInfoDTO dto = new NodeInfoDTO();
-        dto.setId(1L);
-        dto.setNodeId("node1");
-        dto.setIpAddress("127.0.0.1");
-        dto.setPort(8080);
-        dto.setNodeType(NodeType.FULL_NODE);
-        dto.setStatus(NodeStatus.ACTIVE);
-        dto.setVersion("v1");
+        NodeInfoDTO dto = new NodeInfoDTO(1L, "node1", "127.0.0.1", 8080, 
+                NodeStatus.ACTIVE, NodeType.FULL_NODE, null, 0, "v1", 0L, false, 0, 0);
         
         when(nodeService.getNodesByStatus(NodeStatus.ACTIVE)).thenReturn(List.of(dto));
 
