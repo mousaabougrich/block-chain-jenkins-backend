@@ -7,7 +7,7 @@ pipeline {
 
     environment {
         SONAR_HOST = 'sonarqube'  // Using Docker service name instead of IP
-        SONAR_TOKEN = credentials('sqp_8086b5d29bdebb6570a90a7e7b56f00431007c49')  // Jenkins credential ID
+        SONAR_TOKEN = credentials('retail-token')  // Jenkins credential ID
         MAVEN_OPTS = '-Xmx512m -XX:MaxMetaspaceSize=256m'
     }
 
