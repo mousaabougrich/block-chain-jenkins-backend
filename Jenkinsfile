@@ -6,7 +6,7 @@ pipeline {
     }
 
     environment {
-        SONAR_IP = '172.25.0.4'  // ✅ IP corrigée!
+        SONAR_HOST = 'sonarqube'  // Using Docker service name instead of IP
         MAVEN_OPTS = '-Xmx512m -XX:MaxMetaspaceSize=256m'
     }
 
@@ -27,7 +27,7 @@ pipeline {
                             mvn clean verify sonar:sonar \
                             -Dspring.profiles.active=test \
                             -Dsonar.projectKey=biochain \
-                            -Dsonar.host.url=http://${SONAR_IP}:9000
+                            -Dsonar.host.url=http://${SONAR_HOST}:9000
                         '''
                     } catch (Exception e) {
                         echo "Build failed: ${e.getMessage()}"
@@ -41,7 +41,7 @@ pipeline {
     post {
         success {
             echo '✅ Build completed successfully!'
-            echo "📊 View SonarQube: http://${SONAR_IP}:9000/dashboard?id=biochain"
+            echo "📊 View SonarQube: http://${SONAR_HOST}:9000/dashboard?id=biochain"
         }
         failure {
             echo '❌ Build failed - Check console output'
